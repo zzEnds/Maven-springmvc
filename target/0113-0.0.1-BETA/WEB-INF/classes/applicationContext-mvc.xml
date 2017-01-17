@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 		
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop.xsd 
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd  
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd"
+	default-autowire="byName">
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<!-- 国际化信息所在的文件名 -->
+		<property name="basename" value="messages" />
+		<!-- 如果在国际化资源文件中找不到对应代码的信息，就用这个代码作为名称 -->
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+
+
+	<mvc:interceptors> 
+		<!-- 国际化操作拦截器 如果采用基于（请求/Session/Cookie）则必需配置 -->
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+	</mvc:interceptors>
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+	
+	<mvc:annotation-driven>  
+        <mvc:message-converters>  
+            <ref bean="stringHttpMessageConverter" />  
+            <ref bean="jsonMessageConverter" />  
+        </mvc:message-converters>  
+    </mvc:annotation-driven>  
+    
+    <bean id="stringHttpMessageConverter"  
+        class="org.springframework.http.converter.StringHttpMessageConverter">  
+        <constructor-arg value="UTF-8" index="0"></constructor-arg><!-- 避免出现乱码 -->  
+        <property name="supportedMediaTypes">  
+            <list>  
+                <value>text/plain;charset=UTF-8</value>  
+            </list>  
+        </property>  
+    </bean>  
+    
+<!--     <bean id="jsonMessageConverter"   -->
+<!--         class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">   -->
+<!--         <property name="supportedMediaTypes">   -->
+<!--             <list>   -->
+<!--                 <value>application/json; charset=UTF-8</value>   -->
+<!--                 <value>text/html; charset=UTF-8</value>   -->
+<!--             </list>   -->
+<!--         </property>   -->
+<!--     </bean>   -->
+	
+	
+	<!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/" />
+		<property name="suffix" value=".jsp"></property>
+		<property name="order" value="1"></property>
+	</bean>
+	
+<!--  	<mvc:interceptors> -->
+<!-- 		<mvc:interceptor> -->
+<!-- 			<mvc:mapping path="/**" /> -->
+<!-- 			<bean class="com.net263.framework.interceptor.AuthInterceptor"> -->
+<!-- 				<property name="excludeUrls"> -->
+<!-- 					<list> -->
+<!-- 						<value>/login.action</value> -->
+<!-- 						<value>/test.action</value> -->
+<!-- 						<value>/locale.action</value> -->
+<!-- 						<value>/dep/getDep.action</value> -->
+<!-- 						<value>/dep/userDataInit.action</value> -->
+<!-- 						<value>/umalogin.action</value> -->
+<!-- 					</list> -->
+<!-- 				</property> -->
+<!-- 				<property name="filterFuns"> -->
+<!-- 					<list> -->
+<!-- 						<value>/sip</value> -->
+<!-- 						<value>/bill</value> -->
+<!-- 						<value>/config</value> -->
+<!-- 					</list> -->
+<!-- 				</property> -->
+<!-- 			</bean> -->
+<!-- 		</mvc:interceptor> -->
+<!-- 	    <mvc:interceptor> -->
+<!-- 			<mvc:mapping path="/dep/*.action" /> -->
+<!-- 			<bean class="com.net263.framework.interceptor.DataAuthInterceptor"> -->
+<!-- 			</bean> -->
+<!-- 		</mvc:interceptor> -->
+<!-- 	</mvc:interceptors> -->
+	
+	<!-- 数据权限 -->
+<!-- 	<bean id="urlAuthMap" class="org.springframework.beans.factory.config.MapFactoryBean"> -->
+<!-- 	    <property name="sourceMap"> -->
+<!-- 	        <map> -->
+<!-- 				<entry key="/dep/getDepUserList.action"> -->
+<!-- 					<ref bean="path_str" /> -->
+<!-- 				</entry> -->
+<!-- 				<entry key="/dep/ajaxGetUserByDept.action"> -->
+<!-- 					<ref bean="path_str" /> -->
+<!-- 				</entry> -->
+<!-- 				<entry key="/dep/ajaxGetUserByDeptAndUserName.action"> -->
+<!-- 					<ref bean="path_str" /> -->
+<!-- 				</entry> -->
+<!-- 				<entry key="/dep/enabledProductAcc.action"> -->
+<!-- 					<ref bean="path_arr" /> -->
+<!-- 				</entry> -->
+<!-- 				<entry key="/dep/disabledProductAcc.action"> -->
+<!-- 					<ref bean="path_arr" /> -->
+<!-- 				</entry> -->
+<!-- 				<entry key="/dep/delProductAcc.action"> -->
+<!-- 					<ref bean="path_arr" /> -->
+<!-- 				</entry> -->
+<!-- 				<entry key="/dep/resetProPw.action"> -->
+<!-- 					<ref bean="uid_str" /> -->
+<!-- 				</entry> -->
+<!-- 			</map> -->
+<!-- 	    </property> -->
+<!-- 	</bean> -->
+	
+<!-- 	<bean id="path_str" class="com.net263.framework.interceptor.DataAuthParam">   -->
+<!-- 		<constructor-arg name="paramName" value="path"/>  -->
+<!-- 		<constructor-arg name="isArray" value="false"/>    -->
+<!-- 		<constructor-arg name="paramType" value="path"/>   -->
+<!-- 	</bean>  -->
+	
+<!-- 	<bean id="path_arr" class="com.net263.framework.interceptor.DataAuthParam">   -->
+<!-- 		<constructor-arg name="paramName" value="uids[]"/>  -->
+<!-- 		<constructor-arg name="isArray" value="true"/>    -->
+<!-- 		<constructor-arg name="paramType" value="uid"/>   -->
+<!-- 	</bean>  -->
+<!-- 	<bean id="uid_str" class="com.net263.framework.interceptor.DataAuthParam">   -->
+<!-- 		<constructor-arg name="paramName" value="uid"/>   -->
+<!-- 		<constructor-arg name="isArray" value="false"/>   -->
+<!-- 		<constructor-arg name="paramType" value="uid"/>   -->
+<!-- 	</bean>  -->
+
+	<bean id="handlerExceptionResolver"
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="com.net263.framework.exception.LoginException">error</prop>
+				<prop key="com.net263.framework.exception.BusinessException">error</prop>
+				<prop key="com.net263.framework.exception.BizException">cuserror</prop>
+				<prop key="java.lang.Exception">error</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>
